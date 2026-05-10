@@ -126,6 +126,70 @@ type StoreSet = (
 ) => void;
 type StoreGet = () => CouncilStore;
 
+let prototypeWindow: Window | null = null;
+
+function prototypePlaceholderHtml() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Venture Court Prototype</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #09090b;
+      color: #fafafa;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 560px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      background: #111113;
+      padding: 28px;
+    }
+    p { color: #a1a1aa; line-height: 1.6; }
+    .mono { color: #34d399; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="mono">Venture Court</div>
+    <h1>Prototype window reserved</h1>
+    <p>The generated startup web app will load here automatically when SWE 1 finishes building it.</p>
+  </main>
+</body>
+</html>`;
+}
+
+function writePrototypeDocument(code: string) {
+  if (!prototypeWindow || prototypeWindow.closed) return false;
+
+  try {
+    prototypeWindow.document.open();
+    prototypeWindow.document.write(code);
+    prototypeWindow.document.close();
+    prototypeWindow.focus();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function reservePrototypeWindow() {
+  if (!prototypeWindow || prototypeWindow.closed) {
+    prototypeWindow = window.open("about:blank", "venture-court-prototype", "popup,width=1280,height=900");
+  }
+
+  if (!prototypeWindow) return false;
+  prototypeWindow.opener = null;
+  return writePrototypeDocument(prototypePlaceholderHtml());
+}
+
 function setStage(set: StoreSet, index: number, updater: (stage: StageState) => StageState) {
   set((state) => ({
     stages: state.stages.map((stage, stageIndex) => (stageIndex === index ? updater(stage) : stage)),
@@ -312,6 +376,19 @@ async function runStage(set: StoreSet, get: StoreGet, stageIndex: number) {
       set({ isGeneratingCode: true });
       const generatedCode = await generatePrototype(buildContext(get, stageId), swe1);
       set({ generatedCode, isGeneratingCode: false });
+      if (writePrototypeDocument(generatedCode)) {
+        get().addEvent({
+          type: "CODE_GENERATING",
+          actor: "Prototype",
+          content: "Startup web app opened in a separate window.",
+        });
+      } else {
+        get().addEvent({
+          type: "CODE_GENERATING",
+          actor: "Prototype",
+          content: "Prototype is ready. Use Open to launch it.",
+        });
+      }
       appendResult(set, get, stageIndex, {
         agentId: "swe1",
         position: "bullish",
@@ -434,6 +511,13 @@ export const useStore = create<CouncilStore>((set, get) => ({
     if (!get().awaitingCheckpoint || get().isRunning) return;
     const nextStageIndex = get().currentStageIndex + 1;
     if (nextStageIndex >= stageOrder.length) return;
+    if (stageOrder[nextStageIndex] === "prototyping" && reservePrototypeWindow()) {
+      get().addEvent({
+        type: "CODE_GENERATING",
+        actor: "Prototype",
+        content: "Prototype window reserved for the generated startup web app.",
+      });
+    }
     await runStage(set, get, nextStageIndex);
   },
   stopAtCheckpoint: () => {
@@ -481,8 +565,8 @@ export const useStore = create<CouncilStore>((set, get) => ({
       return;
     }
 
-    const popup = window.open("about:blank", "_blank", "noopener,noreferrer");
-    if (!popup) {
+    prototypeWindow = window.open("about:blank", "venture-court-prototype", "popup,width=1280,height=900");
+    if (!prototypeWindow) {
       get().addEvent({
         type: "CODE_GENERATING",
         actor: "Prototype",
@@ -491,9 +575,8 @@ export const useStore = create<CouncilStore>((set, get) => ({
       return;
     }
 
-    popup.document.open();
-    popup.document.write(code);
-    popup.document.close();
+    prototypeWindow.opener = null;
+    writePrototypeDocument(code);
   },
   resetSession: () =>
     set({

@@ -1,6 +1,8 @@
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import { ExternalLink } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { useStore } from "../../store/useStore";
 import type { FinalVerdict as FinalVerdictModel } from "../../types";
 import { StatusBadge } from "../shared/StatusBadge";
 import { ExportButton } from "./ExportButton";
@@ -22,6 +24,7 @@ function Section({ index, title, markdown }: { index: number; title: string; mar
 }
 
 export function FinalVerdict({ verdict }: { verdict: FinalVerdictModel }) {
+  const openPrototype = useStore((state) => state.openPrototype);
   const sections = [
     {
       title: "Institutional Recommendation",
@@ -76,7 +79,19 @@ export function FinalVerdict({ verdict }: { verdict: FinalVerdictModel }) {
             </h1>
             <p className="mt-2 font-mono text-xs text-zinc-600">Session: {verdict.sessionId}</p>
           </div>
-          <ExportButton verdict={verdict} />
+          <div className="flex items-center gap-2">
+            {verdict.mvpCode && (
+              <button
+                type="button"
+                onClick={openPrototype}
+                className="inline-flex items-center gap-2 rounded border border-white/10 px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.03]"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Open Prototype
+              </button>
+            )}
+            <ExportButton verdict={verdict} />
+          </div>
         </div>
       </motion.header>
 

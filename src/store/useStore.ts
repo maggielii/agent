@@ -53,6 +53,7 @@ interface CouncilStore {
   stopAtCheckpoint: () => void;
   addEvent: (event: Omit<FeedEvent, "id" | "timestamp">) => void;
   setStreamingText: (agentId: string, text: string) => void;
+  openPrototype: () => void;
   resetSession: () => void;
 }
 
@@ -469,6 +470,31 @@ export const useStore = create<CouncilStore>((set, get) => ({
     set((state) => ({
       streamingText: { ...state.streamingText, [agentId]: text },
     })),
+  openPrototype: () => {
+    const code = get().generatedCode || get().finalVerdict?.mvpCode || "";
+    if (!code) {
+      get().addEvent({
+        type: "CODE_GENERATING",
+        actor: "Prototype",
+        content: "Prototype is not ready to open yet",
+      });
+      return;
+    }
+
+    const popup = window.open("about:blank", "_blank", "noopener,noreferrer");
+    if (!popup) {
+      get().addEvent({
+        type: "CODE_GENERATING",
+        actor: "Prototype",
+        content: "Browser blocked the prototype window",
+      });
+      return;
+    }
+
+    popup.document.open();
+    popup.document.write(code);
+    popup.document.close();
+  },
   resetSession: () =>
     set({
       ...createInitialState(),

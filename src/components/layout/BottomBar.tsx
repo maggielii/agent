@@ -2,7 +2,7 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useStore } from "../../store/useStore";
 
-export const SAMPLE_IDEAS = [
+const SAMPLE_IDEAS = [
   {
     label: "Construction AI",
     idea: "AI executive coordination system for construction companies - vendor management, executive digest, and decision routing for mid-market general contractors.",

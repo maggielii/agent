@@ -45,6 +45,30 @@ Production build runs `tsc` then Vite:
 npm run build
 ```
 
+### CLoD + FastAPI backend (recommended)
+
+Keep your CLōD API key **only on the server** (see [backend/main.py](backend/main.py)). Terminal one — Python:
+
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env: CLOD_API_KEY, CLOD_BASE_URL=https://api.clod.io/v1, CLOD_MODEL=DeepSeek V3
+uvicorn main:app --reload
+```
+
+Terminal two — Vite (project root):
+
+```bash
+cp .env.example .env
+# Ensure VITE_CLOD_BACKEND_URL=http://127.0.0.1:8000 (matches uvicorn default port)
+npm run dev
+```
+
+Alternatively, set `VITE_CLOD_API_KEY` (and optional `VITE_CLOD_BASE_URL`, `VITE_CLOD_MODEL`) in the root `.env` to call CLōD directly from the browser (the key ships in the client bundle).
+
 ## Environment variables
 
 Copy `.env.example` to `.env` and fill keys **only when wiring real APIs**. The demo runs in **mock mode** without any keys.
@@ -55,19 +79,24 @@ cp .env.example .env
 
 | Variable | Purpose |
 |----------|---------|
+| `VITE_CLOD_BACKEND_URL` | Local FastAPI proxy URL for CLoD (default in `.env.example`: `http://127.0.0.1:8000`) |
+| `VITE_CLOD_API_KEY` | Optional: call CLōD from the browser instead of the backend |
+| `VITE_CLOD_BASE_URL` | Optional with direct mode; default `https://api.clod.io/v1` |
+| `VITE_CLOD_MODEL` | Optional with direct mode; default `DeepSeek V3` |
 | `VITE_GEMINI_API_KEY` | Future Gemini agent calls (`geminiService.ts`) |
 | `VITE_GREPTILE_API_KEY` | Greptile technical due diligence API |
 | `VITE_NIA_API_KEY` | Nia market intelligence API |
-| `VITE_CLOD_API_KEY` | CLoD execution / scaffold API |
 | `VITE_ALLSCALE_API_KEY` | AllScale orchestration API |
 | `VITE_BGA_API_KEY` | BGA governance / ledger API |
+
+Backend-only (file `backend/.env`): `CLOD_API_KEY`, `CLOD_BASE_URL`, `CLOD_MODEL`.
 
 ## Future real API integration
 
 1. **Gemini:** Replace `callGeminiAgent` body with `@google/generative-ai`, structured JSON or tool calls per agent role.
 2. **Greptile:** Swap `realGreptileReview` with authenticated requests to Greptile’s review endpoint; map into `GreptileReview`.
 3. **Nia:** Implement `realNiaResearch` with live web/competitor research and structured extraction.
-4. **CLoD:** Wire `realClodExecution` to plan/scaffold APIs; keep `ClodExecutionPlan` as the contract.
+4. **CLoD:** Live CLōD integration via FastAPI proxy + OpenAI-compatible chat completions (`backend/main.py`, `clodService.ts`).
 5. **AllScale:** Map `realAllScaleOrchestration` to workload graphs and pool sizing responses.
 6. **BGA:** Anchor `decisionHash` / audit trail via partner ledger or signing service.
 

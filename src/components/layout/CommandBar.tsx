@@ -9,7 +9,7 @@ const stageLabels = {
 
 function StatChip({ children }: { children: ReactNode }) {
   return (
-    <span className="rounded border border-white/10 bg-white/5 px-2 py-1 font-mono text-xs text-zinc-300">
+    <span className="rounded-md border border-white/[0.06] bg-white/[0.02] px-2 py-0.5 font-mono text-[11px] text-zinc-500">
       {children}
     </span>
   );
@@ -29,18 +29,15 @@ export function CommandBar() {
   const stageLabel = finalVerdict ? "COMPLETE" : currentStage ? stageLabels[currentStage] : "IDEATION";
 
   return (
-    <header className="col-span-3 flex h-12 items-center justify-between border-b border-white/10 bg-court-surface px-4">
-      <div className="flex items-center gap-3">
-        <h1 className="text-sm font-semibold tracking-wide text-zinc-50">Venture Court</h1>
-        <span className="rounded border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-          Autonomous Venture Governance
-        </span>
-        <span className="font-mono text-xs text-zinc-600">{sessionId}</span>
+    <header className="col-span-3 flex h-12 items-center justify-between gap-4 border-b border-white/[0.06] bg-court-surface px-4">
+      <div className="flex min-w-0 flex-1 items-baseline gap-3">
+        <h1 className="shrink-0 text-sm font-medium text-zinc-100">Venture Court</h1>
+        <span className="hidden truncate font-mono text-[11px] text-zinc-600 sm:inline">{sessionId}</span>
       </div>
-      <div className="flex items-center gap-2">
-        <StatChip>{activeAgents} agents active</StatChip>
+      <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5 sm:gap-2">
+        <StatChip>{activeAgents} active</StatChip>
         <StatChip>{conflicts} conflicts</StatChip>
-        <StatChip>{Math.round(currentConfidence)}% confidence</StatChip>
+        <StatChip>{Math.round(currentConfidence)}%</StatChip>
         <StatChip>{stageLabel}</StatChip>
       </div>
     </header>

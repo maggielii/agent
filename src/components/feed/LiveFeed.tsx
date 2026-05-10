@@ -13,13 +13,26 @@ export function LiveFeed() {
 
   if (events.length === 0) {
     return (
-      <div className="flex min-h-full items-center justify-center p-8 text-center">
-        <div className="max-w-lg">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-600">Session idle</p>
-          <h2 className="mt-3 text-2xl font-semibold text-zinc-100">Submit a startup idea to convene the court.</h2>
-          <p className="mt-3 text-sm leading-6 text-zinc-500">
-            Six agents will evaluate thesis quality, market evidence, technical feasibility, prototype quality, and governance trail.
+      <div className="flex min-h-full items-center justify-center px-6 py-16 pb-28">
+        <div className="w-full max-w-xl rounded-lg border border-white/[0.08] bg-court-raised/40 px-8 py-10 shadow-sm">
+          <h2 className="text-lg font-medium tracking-tight text-zinc-100">New evaluation</h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">
+            Enter a concise venture thesis below. The workflow runs stage-by-stage with checkpoints you can approve or stop.
           </p>
+          <ul className="mt-8 space-y-3 text-sm text-zinc-400">
+            <li className="flex gap-3">
+              <span className="font-mono text-xs tabular-nums text-zinc-600">01</span>
+              <span>Idea and thesis framing, then market and technical review.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="font-mono text-xs tabular-nums text-zinc-600">02</span>
+              <span>Prototype or implementation stage when applicable, with code review signals.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="font-mono text-xs tabular-nums text-zinc-600">03</span>
+              <span>Sealed stages, risk register, and a final proceed or pivot recommendation.</span>
+            </li>
+          </ul>
         </div>
       </div>
     );

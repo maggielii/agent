@@ -29,48 +29,52 @@ export function BottomBar() {
   const canSubmit = idea.trim().length > 10 && !isRunning && !awaitingCheckpoint;
 
   return (
-    <footer className="col-span-3 flex h-16 items-center gap-3 border-t border-white/10 bg-court-surface px-4">
-      <input
-        value={idea}
-        onChange={(event) => setIdea(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && canSubmit) {
-            void submitIdea(idea);
-          }
-        }}
-        placeholder="Describe your startup idea..."
-        disabled={isRunning}
-        className="h-10 flex-1 rounded border border-white/10 bg-white/[0.03] px-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-white/20 disabled:cursor-not-allowed disabled:opacity-60"
-      />
-      <select
-        aria-label="Load demo idea"
-        disabled={isRunning}
-        className="h-10 rounded border border-white/10 bg-court-raised px-3 text-xs text-zinc-300 outline-none disabled:cursor-not-allowed disabled:opacity-60"
-        defaultValue=""
-        onChange={(event) => {
-          const selected = SAMPLE_IDEAS.find((sample) => sample.label === event.target.value);
-          if (selected) setIdea(selected.idea);
-          event.currentTarget.value = "";
-        }}
-      >
-        <option value="" disabled>
-          Load Demo
-        </option>
-        {SAMPLE_IDEAS.map((sample) => (
-          <option key={sample.label} value={sample.label}>
-            {sample.label}
-          </option>
-        ))}
-      </select>
-      <button
-        type="button"
-        disabled={!canSubmit}
-        onClick={() => void submitIdea(idea)}
-        className="inline-flex h-10 items-center gap-2 rounded border border-white/10 bg-zinc-100 px-4 text-sm font-medium text-zinc-950 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400"
-      >
-        {isRunning && <Loader2 className="h-4 w-4 animate-spin" />}
-        Summon Council
-      </button>
+    <footer className="col-span-3 border-t border-white/[0.06] bg-court-surface px-4 py-3">
+      <div className="mx-auto flex max-w-[1600px] flex-col gap-3 md:flex-row md:items-end md:gap-4">
+        <div className="min-w-0 flex-1">
+          <label htmlFor="venture-idea" className="mb-1.5 block text-xs font-medium text-zinc-500">
+            Venture thesis
+          </label>
+          <input
+            id="venture-idea"
+            value={idea}
+            onChange={(event) => setIdea(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && canSubmit) {
+                void submitIdea(idea);
+              }
+            }}
+            placeholder="Problem, buyer, and why now — one or two sentences is enough to start."
+            disabled={isRunning}
+            className="h-10 w-full rounded-md border border-white/[0.08] bg-white/[0.03] px-3 text-sm text-zinc-100 outline-none ring-offset-court-surface placeholder:text-zinc-600 focus:border-white/[0.14] focus:ring-2 focus:ring-white/[0.06] disabled:cursor-not-allowed disabled:opacity-60"
+          />
+        </div>
+        <div className="flex shrink-0 flex-col gap-2 md:w-auto md:flex-row md:items-end">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 md:justify-end">
+            <span className="text-xs text-zinc-600">Examples:</span>
+            {SAMPLE_IDEAS.map((sample) => (
+              <button
+                key={sample.label}
+                type="button"
+                disabled={isRunning}
+                className="text-xs text-zinc-500 underline decoration-white/10 underline-offset-2 transition-colors hover:text-zinc-300 disabled:pointer-events-none disabled:opacity-50"
+                onClick={() => setIdea(sample.idea)}
+              >
+                {sample.label}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            disabled={!canSubmit}
+            onClick={() => void submitIdea(idea)}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-zinc-100 px-5 text-sm font-medium text-zinc-950 hover:bg-white disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
+          >
+            {isRunning && <Loader2 className="h-4 w-4 animate-spin" />}
+            Start evaluation
+          </button>
+        </div>
+      </div>
     </footer>
   );
 }
